@@ -1,11 +1,14 @@
 package br.com.java;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,6 +27,7 @@ import br.com.java.model.CsvPessoa;
 public class Principal {
 
 	public static void main(String[] args) throws IOException {
+	
 		// TODO Auto-generated method stub
 		Scanner entrada = new Scanner(System.in);
 		System.out.println("Escolha 1 - para ler, 2 - escrever, 3 - LerLinhasComoObjetosOpenCsv, 4 - CriarCsvComObjetosOpenCsv");
@@ -55,7 +59,7 @@ public class Principal {
         pessoas.add(new CsvPessoa("Maria",23,"maria@bol.com.br"));
         pessoas.add(new CsvPessoa("Ana",25,"ana@hotmail.com"));
 
-        Writer writer = Files.newBufferedWriter(Paths.get("C:\\Users\\T.I\\Documents\\pessoasComoObjeto.csv"));
+        Writer writer = Files.newBufferedWriter(Paths.get("C:\\Users\\administrator\\Documents\\pessoasComoObjeto.csv"));
         StatefulBeanToCsv<CsvPessoa> beanToCsv = new StatefulBeanToCsvBuilder(writer).build();
         
         try {
@@ -74,17 +78,20 @@ public class Principal {
 	}
 
 	private static void LerLinhasComoObjetosOpenCsv() throws IOException{
+		
+		String COMMA_DELIMITER = ",";
 		// TODO Auto-generated method stub
-		Reader reader = Files.newBufferedReader(Paths.get("C:\\Users\\T.I\\Documents\\pessoasComoObjeto.csv"));
+		try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\administrator\\Documents\\pessoasComoObjeto.csv"))) {
 
-		  CsvToBean<CsvPessoa> csvToBean = new CsvToBeanBuilder(reader)
-	                .withType(CsvPessoa.class)
-	                .build();
+            List<List<String>> result = new ArrayList<>();
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(COMMA_DELIMITER);
+                result.add(Arrays.asList(values));
+            }
 
-        List<CsvPessoa> pessoas = csvToBean.parse();
-
-        for (CsvPessoa pessoa : pessoas)
-            System.out.println(pessoa);
+            System.out.println(result);
+        }
 	}
 
 	private static void escreverCSV() throws IOException{
@@ -96,7 +103,7 @@ public class Principal {
 		linhas.add(new String[] {"Ana Maria", "27", "anamaria@gmail.com"});
 		linhas.add(new String[] {"Fernando", "33", "fernando@bol.com"});
 		
-		Writer writer = Files.newBufferedWriter(Paths.get("C:\\Users\\T.I\\Documents\\pessoas.csv"));
+		Writer writer = Files.newBufferedWriter(Paths.get("C:\\Users\\administrator\\Documents\\pessoas.csv"));
 		CSVWriter csvWriter = new CSVWriter(writer);
 		
 		csvWriter.writeNext(cabecalho);
@@ -108,7 +115,7 @@ public class Principal {
 
 	private static void lerCSV() throws IOException{
 		// TODO Auto-generated method stub
-		Reader reader = Files.newBufferedReader(Paths.get("C:\\Users\\T.I\\Documents\\pessoas.csv"));
+		Reader reader = Files.newBufferedReader(Paths.get("C:\\Users\\administrator\\Documents\\pessoas.csv"));
 		CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
 		
 		List<String[]>pessoas = csvReader.readAll();
